@@ -1,0 +1,32 @@
+{
+  "name": "sol-kit",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "build": "tsc -p ./src",
+    "watch": "tsc -w -p ./src",
+    "format": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
+    "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:check": "eslint \"src/**/*.ts\""
+  },
+  "pkg": {
+    "scripts": "./build/**/*.{js|json}"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-typescript": "^7.15.0",
+    "pkg": "^5.3.1",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@project-serum/anchor": "^0.23.0",
+    "borsh": "^0.4.0",
+    "commander": "^9.1.0",
+    "loglevel": "^1.8.0"
+  }
+}
