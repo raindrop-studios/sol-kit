@@ -32,6 +32,12 @@ export abstract class Program {
       preflightCommitment: "recent",
     });
 
+    return this.getProgramWithProvider(provider);
+  }
+
+  static async getProgramWithProvider(
+    provider: Provider,
+  ): Promise<Program> {
     const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
 
     const program = new AnchorProgram(idl, this.PROGRAM_ID, provider);
