@@ -15,6 +15,12 @@ export abstract class Program {
   static PREFIX = "";
   static PROGRAM_ID: web3.PublicKey;
 
+  static createWithProgram(
+    program: AnchorProgram,
+  ): Program {
+    return new (Object.create(this.prototype)).constructor({ id: this.PROGRAM_ID, program });
+  }
+
   static async getProgram(
     anchorWallet: Wallet | web3.Keypair,
     env: string,
