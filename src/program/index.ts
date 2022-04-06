@@ -1,4 +1,4 @@
-import { web3, Program as AnchorProgram, Provider, Wallet } from "@project-serum/anchor";
+import { web3, Program as AnchorProgram, Provider, Wallet, Idl } from "@project-serum/anchor";
 import { Keypair, TransactionInstruction } from "@solana/web3.js";
 import log from "loglevel";
 
@@ -39,7 +39,13 @@ export abstract class Program {
     provider: Provider,
   ): Promise<Program> {
     const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
+    return this.getProgramWithProviderAndIDL(provider, idl);
+  }
 
+  static async getProgramWithProviderAndIDL(
+    provider: Provider,
+    idl: Idl
+  ): Promise<Program> {
     const program = new AnchorProgram(idl, this.PROGRAM_ID, provider);
 
     return new (Object.create(this.prototype)).constructor({ id: this.PROGRAM_ID, program });
