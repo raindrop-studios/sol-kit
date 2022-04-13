@@ -104,6 +104,37 @@ export async function sendTransactionWithRetry(
   });
 }
 
+export async function sendAsyncSignedTransactionWithRetry(
+  connection: Connection,
+  wallet: Wallet,
+  instructions: Array<TransactionInstruction>,
+  signers: Array<Keypair>,
+  commitment: Commitment = "singleGossip"
+): Promise<string | { txid: string; slot: number }> {
+  const transaction = new Transaction();
+  instructions.forEach((instruction) => transaction.add(instruction));
+  transaction.recentBlockhash = (
+    await connection.getRecentBlockhash(commitment)
+  ).blockhash;
+
+  transaction.setSigners(
+    // fee payed by the wallet owner
+    wallet.publicKey,
+    ...signers.map((s) => s.publicKey)
+  );
+
+  if (signers.length > 0) {
+    transaction.partialSign(...signers);
+  }
+
+  let signedTransaction = await wallet.signTransaction(transaction);
+
+  return sendSignedTransaction({
+    connection,
+    signedTransaction,
+  });
+}
+
 export async function sendSignedTransaction({
   signedTransaction,
   connection,

@@ -4,7 +4,7 @@ import log from "loglevel";
 
 import { Instruction } from "../instruction";
 import { getCluster } from "../connection";
-import { sendTransactionWithRetry } from "../transaction/send";
+import { sendTransactionWithRetry, sendAsyncSignedTransactionWithRetry } from "../transaction/send";
 
 export * from "./objectWrapper";
 
@@ -64,6 +64,15 @@ export abstract class Program {
 
   async sendWithRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
     return sendTransactionWithRetry(
+      this.program.provider.connection,
+      this.program.provider.wallet,
+      instructions,
+      signers,
+    );
+  }
+
+  async sendWithAsyncSigningAndRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
+    return sendAsyncSignedTransactionWithRetry(
       this.program.provider.connection,
       this.program.provider.wallet,
       instructions,
