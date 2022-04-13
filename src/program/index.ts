@@ -12,6 +12,7 @@ export abstract class Program {
   id: web3.PublicKey;
   program: AnchorProgram;
   instruction: Instruction;
+  asyncSigning: boolean = false;
   static PREFIX = "";
   static PROGRAM_ID: web3.PublicKey;
 
@@ -41,6 +42,15 @@ export abstract class Program {
     return this.getProgramWithProvider(provider);
   }
 
+  static async getProgramWithAsyncSignerAndProvider(
+    provider: Provider,
+  ): Promise<Program> {
+    const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
+    const program = this.getProgramWithProviderAndIDL(provider, idl);
+    program.asyncSigning = true;
+    return program;
+  }
+
   static async getProgramWithProvider(
     provider: Provider,
   ): Promise<Program> {
@@ -48,10 +58,10 @@ export abstract class Program {
     return this.getProgramWithProviderAndIDL(provider, idl);
   }
 
-  static async getProgramWithProviderAndIDL(
+  static getProgramWithProviderAndIDL(
     provider: Provider,
     idl: Idl
-  ): Promise<Program> {
+  ): Program {
     const program = new AnchorProgram(idl, this.PROGRAM_ID, provider);
 
     return new (Object.create(this.prototype)).constructor({ id: this.PROGRAM_ID, program });
@@ -63,6 +73,15 @@ export abstract class Program {
   }
 
   async sendWithRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
+    if (this.asyncSigning) {
+      return sendAsyncSignedTransactionWithRetry(
+        this.program.provider.connection,
+        this.program.provider.wallet,
+        instructions,
+        signers,
+      );
+    }
+
     return sendTransactionWithRetry(
       this.program.provider.connection,
       this.program.provider.wallet,
