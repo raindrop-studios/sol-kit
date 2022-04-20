@@ -1,7 +1,8 @@
 export * from './program';
 export * from './instruction';
 export * as Transaction from './transaction';
-export * as CLI from './cli';
 export * as Connection from './connection';
-export * as Wallet from './wallet';
 export * as State from './state';
+
+// export * as CLI from './cli';
+// export * as Wallet from './wallet';

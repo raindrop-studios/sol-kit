@@ -19,13 +19,14 @@ export abstract class Program {
   static createWithProgram(
     program: AnchorProgram,
   ): Program {
-    return new (Object.create(this.prototype)).constructor({ id: this.PROGRAM_ID, program });
+    return new ((Object.create(this.prototype)).constructor)({ id: this.PROGRAM_ID, program });
   }
 
   static async getProgram(
     anchorWallet: Wallet | web3.Keypair,
     env: string,
     customRpcUrl: string,
+    constructorFn: any
   ): Promise<Program> {
     if (customRpcUrl) log.debug("USING CUSTOM RPC URL:", customRpcUrl);
 
@@ -39,32 +40,37 @@ export abstract class Program {
       preflightCommitment: "recent",
     });
 
-    return this.getProgramWithProvider(provider);
+    return this.getProgramWithProvider(provider, constructorFn);
   }
 
   static async getProgramWithAsyncSignerAndProvider(
     provider: Provider,
+    constructorFn: any
   ): Promise<Program> {
     const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
-    const program = this.getProgramWithProviderAndIDL(provider, idl);
+    const program = this.getProgramWithProviderAndIDL(provider, idl, constructorFn);
     program.asyncSigning = true;
     return program;
   }
 
   static async getProgramWithProvider(
     provider: Provider,
+    constructorFn: any
   ): Promise<Program> {
     const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
-    return this.getProgramWithProviderAndIDL(provider, idl);
+    return this.getProgramWithProviderAndIDL(provider, idl, constructorFn);
   }
 
   static getProgramWithProviderAndIDL(
     provider: Provider,
-    idl: Idl
+    idl: Idl,
+    constructorFn: any
   ): Program {
     const program = new AnchorProgram(idl, this.PROGRAM_ID, provider);
 
-    return new (Object.create(this.prototype)).constructor({ id: this.PROGRAM_ID, program });
+    return constructorFn({ id: this.PROGRAM_ID, program });
+    // return Object.create(this.prototype, { id: { value: this.PROGRAM_ID, writable: true }, program: { value: program, writable: true } });
+    // return new Program({ id: this.PROGRAM_ID, program });
   }
 
   constructor(args: { id: web3.PublicKey; program: AnchorProgram; }) {
