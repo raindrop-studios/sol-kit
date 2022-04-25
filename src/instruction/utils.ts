@@ -7,7 +7,7 @@ export function convertNumbersToBNs(data: Object | any[], keysToUpdate?: string[
         return new BN(item);
       }
 
-      if (keysToUpdate?.length > 0) {
+      if (keysToUpdate && keysToUpdate.length > 0) {
         let parsedKeys = keysToUpdate[0].split(".");
         const [firstKey, ...remainingKeys] = parsedKeys;
         if (firstKey === "[]" && remainingKeys?.length > 0) {
@@ -19,7 +19,7 @@ export function convertNumbersToBNs(data: Object | any[], keysToUpdate?: string[
     });
   }
 
-  keysToUpdate.forEach((key) => {
+  keysToUpdate && keysToUpdate.forEach((key) => {
     let parsedKeys = key.split(".");
     const [firstKey, ...remainingKeys] = parsedKeys;
     if (parsedKeys.length == 1) {

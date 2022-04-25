@@ -1,11 +1,9 @@
-import { web3, Program } from "@project-serum/anchor";
+import { Program } from "../program/index";
 
 export abstract class Instruction {
-  id: web3.PublicKey;
-  program: Program;
+  program: Program.Program;
 
-  constructor(args: { id: web3.PublicKey; program: Program }) {
-    this.id = args.id;
+  constructor(args: { program: Program.Program }) {
     this.program = args.program;
   }
 }

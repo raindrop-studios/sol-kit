@@ -1,11 +1,14 @@
 {
   "name": "@raindrops-protocol/sol-kit",
-  "version": "0.1.26",
+  "version": "0.1.50",
   "description": "",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/src/index.js",
+  "main": "./dist/src/index.js",
+  "types": "./distsrc/index.d.ts",
+  "type": "commonjs",
+  "exports": "./dist/src/index.js",
   "scripts": {
-    "build": "tsc -p ./src",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "watch": "tsc -w -p ./src",
     "format": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
     "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",

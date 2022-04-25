@@ -8,26 +8,110 @@ import { sendTransactionWithRetry, sendAsyncSignedTransactionWithRetry } from ".
 
 export * from "./objectWrapper";
 
-export abstract class Program {
-  id: web3.PublicKey;
-  program: AnchorProgram;
-  instruction: Instruction;
-  asyncSigning: boolean = false;
-  static PREFIX = "";
-  static PROGRAM_ID: web3.PublicKey;
-
-  static createWithProgram(
-    program: AnchorProgram,
-  ): Program {
-    return new ((Object.create(this.prototype)).constructor)({ id: this.PROGRAM_ID, program });
+export namespace Program {
+  export interface ProgramConfig {
+    asyncSigning: boolean;
+    provider?: Provider;
+    idl?: Idl | null;
+    client?: AnchorProgram;
   }
 
-  static async getProgram(
+  export abstract class Program {
+    instruction: Instruction;
+    asyncSigning: boolean = false;
+    static PREFIX = "";
+
+    protected PROGRAM_ID: web3.PublicKey;
+    get id(): web3.PublicKey {
+      return this.PROGRAM_ID;
+    }
+
+    private _client: AnchorProgram;
+    get client(): AnchorProgram {
+      return this._client;
+    }
+    set client(client: AnchorProgram) {
+      this._client = client;
+    }
+
+    sendWithRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
+      if (this.asyncSigning) {
+        return sendAsyncSignedTransactionWithRetry(
+          this.client.provider.connection,
+          this.client.provider.wallet,
+          instructions,
+          signers,
+        );
+      }
+
+      return sendTransactionWithRetry(
+        this.client.provider.connection,
+        this.client.provider.wallet,
+        instructions,
+        signers,
+      );
+    }
+
+    sendWithAsyncSigningAndRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
+      return sendAsyncSignedTransactionWithRetry(
+        this.client.provider.connection,
+        this.client.provider.wallet,
+        instructions,
+        signers,
+      );
+    }
+
+    static getProgramWithConfig<T extends Program>(
+      type: { new(): T ;},
+      config: ProgramConfig,
+    ): Promise<T> {
+      return ProgramHelpers.getProgramWithConfig(type, config);
+    }
+
+    static getProgram<T extends Program>(
+      type: { new(): T ;},
+      anchorWallet: Wallet | web3.Keypair,
+      env: string,
+      customRpcUrl: string,
+    ): Promise<T> {
+      return ProgramHelpers.getProgram(type, anchorWallet, env, customRpcUrl);
+    }
+  }
+}
+
+export namespace ProgramHelpers {
+  export async function getProgramWithConfig<T extends Program.Program>(
+    type: { new(): T ;},
+    config: Program.ProgramConfig,
+  ): Promise<T> {
+    let { client, provider, idl } = config;
+    const instance = new type();
+    instance.asyncSigning = config.asyncSigning;
+
+    if (client) {
+      instance.client = client;
+      return instance;
+    }
+
+    if (provider && !idl) {
+      idl = await AnchorProgram.fetchIdl(instance.id, provider);
+    }
+
+    if (provider && idl) {
+      const client = new AnchorProgram(idl, instance.id, provider);
+      instance.client = client;
+      return instance;
+    }
+
+    return Promise.resolve(instance);
+  }
+
+  export function getProgram<T extends Program.Program>(
+    type: { new(): T ;},
     anchorWallet: Wallet | web3.Keypair,
     env: string,
     customRpcUrl: string,
-    constructorFn: any
-  ): Promise<Program> {
+  ): Promise<T> {
     if (customRpcUrl) log.debug("USING CUSTOM RPC URL:", customRpcUrl);
 
     const solConnection = new web3.Connection(customRpcUrl || getCluster(env));
@@ -40,68 +124,11 @@ export abstract class Program {
       preflightCommitment: "recent",
     });
 
-    return this.getProgramWithProvider(provider, constructorFn);
-  }
+    const config = {
+      asyncSigning: false,
+      provider,
+    } as Program.ProgramConfig;
 
-  static async getProgramWithAsyncSignerAndProvider(
-    provider: Provider,
-    constructorFn: any
-  ): Promise<Program> {
-    const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
-    const program = this.getProgramWithProviderAndIDL(provider, idl, constructorFn);
-    program.asyncSigning = true;
-    return program;
-  }
-
-  static async getProgramWithProvider(
-    provider: Provider,
-    constructorFn: any
-  ): Promise<Program> {
-    const idl = await AnchorProgram.fetchIdl(this.PROGRAM_ID, provider);
-    return this.getProgramWithProviderAndIDL(provider, idl, constructorFn);
-  }
-
-  static getProgramWithProviderAndIDL(
-    provider: Provider,
-    idl: Idl,
-    constructorFn: any
-  ): Program {
-    const program = new AnchorProgram(idl, this.PROGRAM_ID, provider);
-
-    return constructorFn({ id: this.PROGRAM_ID, program });
-    // return Object.create(this.prototype, { id: { value: this.PROGRAM_ID, writable: true }, program: { value: program, writable: true } });
-    // return new Program({ id: this.PROGRAM_ID, program });
-  }
-
-  constructor(args: { id: web3.PublicKey; program: AnchorProgram; }) {
-    this.id = args.id;
-    this.program = args.program;
-  }
-
-  async sendWithRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
-    if (this.asyncSigning) {
-      return sendAsyncSignedTransactionWithRetry(
-        this.program.provider.connection,
-        this.program.provider.wallet,
-        instructions,
-        signers,
-      );
-    }
-
-    return sendTransactionWithRetry(
-      this.program.provider.connection,
-      this.program.provider.wallet,
-      instructions,
-      signers,
-    );
-  }
-
-  async sendWithAsyncSigningAndRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
-    return sendAsyncSignedTransactionWithRetry(
-      this.program.provider.connection,
-      this.program.provider.wallet,
-      instructions,
-      signers,
-    );
+    return this.getProgramWithConfig(type, config);
   }
 }

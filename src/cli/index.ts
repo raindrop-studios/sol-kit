@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { program, Argument, Command } from 'commander';
 import log from 'loglevel';
 
@@ -75,7 +74,7 @@ export function programCommandWithArgsAndConfig(name: string, args: Array<Argume
     });
 }
 
-function setLogLevel(value: string, _prev: string): string {
+function setLogLevel(value: string, _prev: string): string | undefined {
   if (value === undefined || value === null) {
     return;
   }
@@ -83,8 +82,9 @@ function setLogLevel(value: string, _prev: string): string {
   log.setLevel(value as log.LogLevelDesc);
 }
 
-export function readConfig(configFile: string) {
+export async function readConfig(configFile: string) {
   let config = {};
+  const fs = await import ("fs");
   if (fs.existsSync(configFile)) {
     config = JSON.parse(fs.readFileSync(configFile, "utf8"));
   } else {

@@ -1,11 +1,12 @@
 import { web3 } from "@project-serum/anchor";
 import log from "loglevel";
-import * as fs from "fs";
 
-export function loadWalletKey(keypair): web3.Keypair {
+export async function loadWalletKey(keypair): Promise<web3.Keypair> {
   if (!keypair || keypair == "") {
     throw new Error("Keypair is required!");
   }
+
+  const fs = await import ("fs");
   const loaded = web3.Keypair.fromSecretKey(
     new Uint8Array(JSON.parse(fs.readFileSync(keypair).toString()))
   );

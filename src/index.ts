@@ -3,6 +3,5 @@ export * from './instruction';
 export * as Transaction from './transaction';
 export * as Connection from './connection';
 export * as State from './state';
-
-// export * as CLI from './cli';
-// export * as Wallet from './wallet';
+export * as CLI from './cli';
+export * as Wallet from './wallet';
