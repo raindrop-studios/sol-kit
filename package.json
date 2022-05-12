@@ -1,6 +1,6 @@
 {
   "name": "@raindrops-protocol/sol-kit",
-  "version": "0.1.59",
+  "version": "0.1.61",
   "description": "",
   "module": "./dist/src/index.js",
   "main": "./dist/src/index.js",
@@ -28,7 +28,7 @@
     "url": "git@github.com:raindrops-protocol/sol-kit.git"
   },
   "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
