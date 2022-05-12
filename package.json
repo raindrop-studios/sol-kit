@@ -1,6 +1,6 @@
 {
   "name": "@raindrops-protocol/sol-kit",
-  "version": "0.1.61",
+  "version": "0.1.62",
   "description": "",
   "module": "./dist/src/index.js",
   "main": "./dist/src/index.js",
