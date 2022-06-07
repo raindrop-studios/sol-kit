@@ -1,4 +1,4 @@
-import { web3, Program as AnchorProgram, Provider, Wallet, Idl } from "@project-serum/anchor";
+import { web3, Program as AnchorProgram, Provider, AnchorProvider, Wallet, Idl } from "@project-serum/anchor";
 import { Keypair, TransactionInstruction } from "@solana/web3.js";
 import log from "loglevel";
 
@@ -38,7 +38,7 @@ export namespace Program {
       if (this.asyncSigning) {
         return sendAsyncSignedTransactionWithRetry(
           this.client.provider.connection,
-          this.client.provider.wallet,
+          (this.client.provider as AnchorProvider).wallet,
           instructions,
           signers,
         );
@@ -46,7 +46,7 @@ export namespace Program {
 
       return sendTransactionWithRetry(
         this.client.provider.connection,
-        this.client.provider.wallet,
+        (this.client.provider as AnchorProvider).wallet,
         instructions,
         signers,
       );
@@ -55,7 +55,7 @@ export namespace Program {
     sendWithAsyncSigningAndRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = []) {
       return sendAsyncSignedTransactionWithRetry(
         this.client.provider.connection,
-        this.client.provider.wallet,
+        (this.client.provider as AnchorProvider).wallet,
         instructions,
         signers,
       );
@@ -68,13 +68,33 @@ export namespace Program {
       return ProgramHelpers.getProgramWithConfig(type, config);
     }
 
-    static getProgram<T extends Program>(
+
+    static getProgramWithWallet<T extends Program>(
       type: { new(): T ;},
-      anchorWallet: Wallet | web3.Keypair,
+      wallet: Wallet,
       env: string,
       customRpcUrl: string,
     ): Promise<T> {
-      return ProgramHelpers.getProgram(type, anchorWallet, env, customRpcUrl);
+      return ProgramHelpers.getProgram(type, wallet, env, customRpcUrl);
+    }
+
+    static getProgramWithWalletKeyPair<T extends Program>(
+      type: { new(): T ;},
+      walletKeyPair: web3.Keypair,
+      env: string,
+      customRpcUrl: string,
+    ): Promise<T> {
+      return ProgramHelpers.getProgram(type, null, env, customRpcUrl, walletKeyPair);
+    }
+
+    static getProgram<T extends Program>(
+      type: { new(): T ;},
+      anchorWallet: Wallet | null,
+      env: string,
+      customRpcUrl: string,
+      walletKeyPair?: web3.Keypair,
+    ): Promise<T> {
+      return ProgramHelpers.getProgram(type, anchorWallet, env, customRpcUrl, walletKeyPair);
     }
   }
 }
@@ -108,19 +128,25 @@ export namespace ProgramHelpers {
 
   export function getProgram<T extends Program.Program>(
     type: { new(): T ;},
-    anchorWallet: Wallet | web3.Keypair,
+    wallet: Wallet | null,
     env: string,
     customRpcUrl: string,
+    walletKeyPair?: web3.Keypair,
   ): Promise<T> {
     if (customRpcUrl) log.debug("USING CUSTOM RPC URL:", customRpcUrl);
 
     const solConnection = new web3.Connection(customRpcUrl || getCluster(env));
 
-    if (anchorWallet instanceof web3.Keypair) {
-      anchorWallet = new Wallet(anchorWallet);
+    let providerWallet;
+    if (wallet) {
+      providerWallet = wallet;
+    } else if (walletKeyPair) {
+      providerWallet = new Wallet(walletKeyPair);
+    } else if(!walletKeyPair) {
+      throw new Error("Wallet nor a keypair was passed into Program.getProgram");
     }
 
-    const provider = new Provider(solConnection, anchorWallet, {
+    const provider = new AnchorProvider(solConnection, providerWallet, {
       preflightCommitment: "recent",
     });
 
