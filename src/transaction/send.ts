@@ -213,7 +213,7 @@ export async function sendSignedTransaction({
       throw new Error(JSON.stringify(simulateResult.err));
     }
     log.error("Got this far.");
-    // throw new Error('Transaction failed');
+    throw new Error('Transaction confirmation failed');
   } finally {
     done = true;
   }
@@ -330,7 +330,7 @@ async function awaitTransactionSignatureConfirmation(
   });
 
   //@ts-ignore
-  if (connection._signatureSubscriptions[subId])
+  if (connection._signatureSubscriptions && connection._signatureSubscriptions[subId])
     connection.removeSignatureListener(subId);
   done = true;
   log.debug("Returning status", status);
