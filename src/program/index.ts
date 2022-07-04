@@ -1,4 +1,4 @@
-import { web3, Program as AnchorProgram, Provider, AnchorProvider, Wallet, Idl } from "@project-serum/anchor";
+import { web3, Program as AnchorProgram, AnchorProvider, Wallet, Idl } from "@project-serum/anchor";
 import { Keypair, TransactionInstruction } from "@solana/web3.js";
 import log from "loglevel";
 
@@ -11,7 +11,7 @@ export * from "./objectWrapper";
 export namespace Program {
   export interface ProgramConfig {
     asyncSigning: boolean;
-    provider?: Provider;
+    provider?: AnchorProvider;
     idl?: Idl | null;
     client?: AnchorProgram;
   }
