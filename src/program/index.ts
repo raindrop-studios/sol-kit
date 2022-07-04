@@ -73,7 +73,7 @@ export namespace Program {
       type: { new(): T ;},
       wallet: Wallet,
       env: string,
-      customRpcUrl: string,
+      customRpcUrl: string | undefined,
     ): Promise<T> {
       return ProgramHelpers.getProgram(type, wallet, env, customRpcUrl);
     }
@@ -82,7 +82,7 @@ export namespace Program {
       type: { new(): T ;},
       walletKeyPair: web3.Keypair,
       env: string,
-      customRpcUrl: string,
+      customRpcUrl?: string,
     ): Promise<T> {
       return ProgramHelpers.getProgram(type, null, env, customRpcUrl, walletKeyPair);
     }
@@ -91,7 +91,7 @@ export namespace Program {
       type: { new(): T ;},
       anchorWallet: Wallet | null,
       env: string,
-      customRpcUrl: string,
+      customRpcUrl: string | undefined,
       walletKeyPair?: web3.Keypair,
     ): Promise<T> {
       return ProgramHelpers.getProgram(type, anchorWallet, env, customRpcUrl, walletKeyPair);
@@ -130,7 +130,7 @@ export namespace ProgramHelpers {
     type: { new(): T ;},
     wallet: Wallet | null,
     env: string,
-    customRpcUrl: string,
+    customRpcUrl: string | undefined,
     walletKeyPair?: web3.Keypair,
   ): Promise<T> {
     if (customRpcUrl) log.debug("USING CUSTOM RPC URL:", customRpcUrl);
