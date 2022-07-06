@@ -79,7 +79,8 @@ export async function sendTransactionWithRetry(
   wallet: Wallet,
   instructions: Array<TransactionInstruction>,
   signers: Array<Keypair>,
-  commitment: Commitment = "singleGossip"
+  commitment: Commitment = "singleGossip",
+  timeout: number = DEFAULT_TIMEOUT,
 ): Promise<{ txid: string; slot: number }> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
@@ -103,6 +104,7 @@ export async function sendTransactionWithRetry(
     connection,
     signedTransaction: transaction,
     commitment,
+    timeout,
   });
 }
 
@@ -111,7 +113,8 @@ export async function sendAsyncSignedTransactionWithRetry(
   wallet: Wallet,
   instructions: Array<TransactionInstruction>,
   signers: Array<Keypair>,
-  commitment: Commitment = "singleGossip"
+  commitment: Commitment = "singleGossip",
+  timeout: number = DEFAULT_TIMEOUT,
 ): Promise<{ txid: string; slot: number }> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
@@ -135,6 +138,7 @@ export async function sendAsyncSignedTransactionWithRetry(
     connection,
     signedTransaction,
     commitment,
+    timeout,
   });
 }
 
@@ -179,7 +183,7 @@ export async function sendSignedTransaction({
       timeout,
       connection,
       commitment,
-      commitment === "confirmed"
+      commitment === "confirmed" // If the status is confirmed, get status query is fine
     );
 
     if (!confirmation)

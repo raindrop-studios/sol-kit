@@ -34,14 +34,19 @@ export namespace Program {
       this._client = client;
     }
 
-    sendWithRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = [], options: { commitment: web3.Commitment } = { commitment: "confirmed" }) {
+    sendWithRetry(
+      instructions: Array<TransactionInstruction>,
+      signers: Array<Keypair> = [],
+      options: { commitment: web3.Commitment, timeout?: number } = { commitment: "confirmed" }
+    ) {
       if (this.asyncSigning) {
         return sendAsyncSignedTransactionWithRetry(
           this.client.provider.connection,
           (this.client.provider as AnchorProvider).wallet,
           instructions,
           signers,
-          options.commitment
+          options.commitment,
+          options.timeout,
         );
       }
 
@@ -50,17 +55,23 @@ export namespace Program {
         (this.client.provider as AnchorProvider).wallet,
         instructions,
         signers,
-        options.commitment
+        options.commitment,
+        options.timeout,
       );
     }
 
-    sendWithAsyncSigningAndRetry(instructions: Array<TransactionInstruction>, signers: Array<Keypair> = [], options: { commitment: web3.Commitment } = { commitment: "confirmed" }) {
+    sendWithAsyncSigningAndRetry(
+      instructions: Array<TransactionInstruction>,
+      signers: Array<Keypair> = [],
+      options: { commitment: web3.Commitment, timeout?: number } = { commitment: "confirmed" }
+    ) {
       return sendAsyncSignedTransactionWithRetry(
         this.client.provider.connection,
         (this.client.provider as AnchorProvider).wallet,
         instructions,
         signers,
-        options.commitment
+        options.commitment,
+        options.timeout,
       );
     }
 
