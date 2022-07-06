@@ -27,9 +27,6 @@
     "type": "git",
     "url": "git@github.com:raindrops-protocol/sol-kit.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
