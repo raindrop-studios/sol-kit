@@ -42,7 +42,7 @@ export const sendTransactionWithRetryWithKeypair = async (
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    block || (await connection.getRecentBlockhash(commitment))
+    block || (await connection.getRecentBlockhash("singleGossip"))
   ).blockhash;
 
   if (includesFeePayer) {
@@ -68,6 +68,7 @@ export const sendTransactionWithRetryWithKeypair = async (
   const { txid, slot } = await sendSignedTransaction({
     connection,
     signedTransaction: transaction,
+    commitment,
   });
 
   return { txid, slot };
@@ -83,7 +84,7 @@ export async function sendTransactionWithRetry(
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    await connection.getRecentBlockhash(commitment)
+    await connection.getRecentBlockhash("singleGossip")
   ).blockhash;
 
   transaction.setSigners(
@@ -101,6 +102,7 @@ export async function sendTransactionWithRetry(
   return sendSignedTransaction({
     connection,
     signedTransaction: transaction,
+    commitment,
   });
 }
 
@@ -114,7 +116,7 @@ export async function sendAsyncSignedTransactionWithRetry(
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    await connection.getRecentBlockhash(commitment)
+    await connection.getRecentBlockhash("singleGossip")
   ).blockhash;
 
   transaction.setSigners(
@@ -132,6 +134,7 @@ export async function sendAsyncSignedTransactionWithRetry(
   return sendSignedTransaction({
     connection,
     signedTransaction,
+    commitment,
   });
 }
 
@@ -139,6 +142,7 @@ export async function sendSignedTransaction({
   signedTransaction,
   connection,
   timeout = DEFAULT_TIMEOUT,
+  commitment = "confirmed"
 }: {
   signedTransaction: Transaction;
   connection: Connection;
@@ -146,6 +150,7 @@ export async function sendSignedTransaction({
   sentMessage?: string;
   successMessage?: string;
   timeout?: number;
+  commitment?: Commitment;
 }): Promise<{ txid: string; slot: number }> {
   const rawTransaction = signedTransaction.serialize();
   const startTime = getUnixTs();
@@ -173,7 +178,7 @@ export async function sendSignedTransaction({
       txid,
       timeout,
       connection,
-      "confirmed",
+      commitment,
       true
     );
 
