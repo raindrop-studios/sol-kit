@@ -38,7 +38,7 @@ export const sendTransactionWithRetryWithKeypair = async (
   includesFeePayer: boolean = false,
   block?: BlockhashAndFeeCalculator,
   beforeSend?: () => void
-) => {
+): Promise<{ txid: string; slot: number }> => {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
@@ -79,7 +79,7 @@ export async function sendTransactionWithRetry(
   instructions: Array<TransactionInstruction>,
   signers: Array<Keypair>,
   commitment: Commitment = "singleGossip"
-): Promise<string | { txid: string; slot: number }> {
+): Promise<{ txid: string; slot: number }> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
@@ -110,7 +110,7 @@ export async function sendAsyncSignedTransactionWithRetry(
   instructions: Array<TransactionInstruction>,
   signers: Array<Keypair>,
   commitment: Commitment = "singleGossip"
-): Promise<string | { txid: string; slot: number }> {
+): Promise<{ txid: string; slot: number }> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
