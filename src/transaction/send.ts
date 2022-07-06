@@ -179,7 +179,7 @@ export async function sendSignedTransaction({
       timeout,
       connection,
       commitment,
-      true
+      commitment === "confirmed"
     );
 
     if (!confirmation)
