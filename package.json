@@ -1,5 +1,5 @@
 {
-  "name": "@raindrops-protocol/sol-kit",
+  "name": "@raindrop-studios/sol-kit",
   "version": "0.1.71",
   "description": "",
   "module": "./dist/src/index.js",
@@ -25,7 +25,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:raindrops-protocol/sol-kit.git"
+    "url": "git@github.com:raindrop-studios/sol-kit.git"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
