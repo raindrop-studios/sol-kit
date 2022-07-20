@@ -135,7 +135,11 @@ export namespace ProgramHelpers {
       idl = await AnchorProgram.fetchIdl(instance.id, provider);
     }
 
-    if (provider && idl) {
+    if (!idl) {
+      throw new IDLNotFoundError(instance.id.toString());
+    }
+
+    if (provider) {
       const client = new AnchorProgram(idl, instance.id, provider);
       instance.client = client;
       return instance;
@@ -180,4 +184,14 @@ export namespace ProgramHelpers {
 export interface SendOptions {
   commitment: web3.Commitment;
   timeout?: number;
+}
+
+export class IDLNotFoundError extends Error {
+  constructor(message: string) {
+    super(`IDL Not Found for id: ${message}`);
+
+    // Set the prototype explicitly
+    // Ref: https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    Object.setPrototypeOf(this, Error.prototype);
+  }
 }
