@@ -38,7 +38,7 @@ export const sendTransactionWithRetryWithKeypair = async (
   includesFeePayer: boolean = false,
   block?: BlockhashAndFeeCalculator,
   beforeSend?: () => void
-): Promise<{ txid: string; slot: number }> => {
+): Promise<SendTransactionResult> => {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
@@ -155,7 +155,7 @@ export async function sendSignedTransaction({
   successMessage?: string;
   timeout?: number;
   commitment?: Commitment;
-}): Promise<{ txid: string; slot: number }> {
+}): Promise<SendTransactionResult> {
   const rawTransaction = signedTransaction.serialize();
   const startTime = getUnixTs();
   let slot = 0;
@@ -344,4 +344,9 @@ async function awaitTransactionSignatureConfirmation(
   done = true;
   log.debug("Returning status", status);
   return status;
+}
+
+export interface SendTransactionResult {
+  txid: string;
+  slot: number;
 }
