@@ -81,7 +81,7 @@ export async function sendTransactionWithRetry(
   signers: Array<Keypair>,
   commitment: Commitment = "singleGossip",
   timeout: number = DEFAULT_TIMEOUT,
-): Promise<{ txid: string; slot: number }> {
+): Promise<SendTransactionResult> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
@@ -115,7 +115,7 @@ export async function sendAsyncSignedTransactionWithRetry(
   signers: Array<Keypair>,
   commitment: Commitment = "singleGossip",
   timeout: number = DEFAULT_TIMEOUT,
-): Promise<{ txid: string; slot: number }> {
+): Promise<SendTransactionResult> {
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (

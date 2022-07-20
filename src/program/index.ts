@@ -4,7 +4,11 @@ import log from "loglevel";
 
 import { Instruction } from "../instruction";
 import { getCluster } from "../connection";
-import { sendTransactionWithRetry, sendAsyncSignedTransactionWithRetry } from "../transaction/send";
+import {
+  sendTransactionWithRetry,
+  sendAsyncSignedTransactionWithRetry,
+  SendTransactionResult,
+} from "../transaction/send";
 
 export * from "./objectWrapper";
 
@@ -38,7 +42,7 @@ export namespace Program {
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
       options: SendOptions = { commitment: "confirmed" }
-    ) {
+    ): Promise<SendTransactionResult> {
       if (this.asyncSigning) {
         return sendAsyncSignedTransactionWithRetry(
           this.client.provider.connection,
@@ -64,7 +68,7 @@ export namespace Program {
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
       options: SendOptions = { commitment: "confirmed" }
-    ) {
+    ): Promise<SendTransactionResult> {
       return sendAsyncSignedTransactionWithRetry(
         this.client.provider.connection,
         (this.client.provider as AnchorProvider).wallet,
