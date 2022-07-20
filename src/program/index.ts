@@ -37,7 +37,7 @@ export namespace Program {
     sendWithRetry(
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
-      options: { commitment: web3.Commitment, timeout?: number } = { commitment: "confirmed" }
+      options: SendOptions = { commitment: "confirmed" }
     ) {
       if (this.asyncSigning) {
         return sendAsyncSignedTransactionWithRetry(
@@ -63,7 +63,7 @@ export namespace Program {
     sendWithAsyncSigningAndRetry(
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
-      options: { commitment: web3.Commitment, timeout?: number } = { commitment: "confirmed" }
+      options: SendOptions = { commitment: "confirmed" }
     ) {
       return sendAsyncSignedTransactionWithRetry(
         this.client.provider.connection,
@@ -171,4 +171,9 @@ export namespace ProgramHelpers {
 
     return this.getProgramWithConfig(type, config);
   }
+}
+
+export interface SendOptions {
+  commitment: web3.Commitment;
+  timeout?: number;
 }
