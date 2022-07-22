@@ -74,7 +74,7 @@ export function convertTypeToType(
         if (typeof data[firstKey] == existingType) {
           data[firstKey] = toType(data[firstKey]);
         }
-      } else {
+      } else if (data[firstKey]) {
         data[firstKey] = convertTypeToType(
           data[firstKey],
           [remainingKeys.join(".")],
