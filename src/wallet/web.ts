@@ -1,7 +1,7 @@
 import { web3, Wallet } from "@project-serum/anchor";
 import { SendOptions } from "../program";
 
-export default class WebWallet implements Wallet {
+export class WebWallet implements Wallet {
   _signTransaction: (transaction: web3.Transaction) => Promise<web3.Transaction>;
   _signAllTransactions: (transaction: web3.Transaction[]) => Promise<web3.Transaction[]>;
   sendTransaction: (transaction: web3.Transaction, connection: web3.Connection, options?: SendOptions) => Promise<string>;
