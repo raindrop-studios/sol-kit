@@ -42,7 +42,7 @@ export const sendTransactionWithRetryWithKeypair = async (
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    block || (await connection.getRecentBlockhash("singleGossip"))
+    block || (await connection.getLatestBlockhashAndContext(commitment)).value
   ).blockhash;
 
   if (includesFeePayer) {
@@ -85,8 +85,8 @@ export async function sendTransactionWithRetry(
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    await connection.getRecentBlockhash("singleGossip")
-  ).blockhash;
+    await connection.getLatestBlockhashAndContext(commitment)
+  ).value.blockhash;
 
   transaction.setSigners(
     // fee payed by the wallet owner
@@ -119,8 +119,8 @@ export async function sendAsyncSignedTransactionWithRetry(
   const transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
   transaction.recentBlockhash = (
-    await connection.getRecentBlockhash("singleGossip")
-  ).blockhash;
+    await connection.getLatestBlockhashAndContext(commitment)
+  ).value.blockhash;
 
   transaction.setSigners(
     // fee payed by the wallet owner
@@ -237,10 +237,9 @@ async function simulateTransaction(
   commitment: Commitment
 ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
   // @ts-ignore
-  transaction.recentBlockhash = await connection._recentBlockhash(
-    // @ts-ignore
-    connection._disableBlockhashCaching
-  );
+  transaction.recentBlockhash = (
+    await connection.getLatestBlockhashAndContext(commitment)
+  ).value.blockhash;
 
   const signData = transaction.serializeMessage();
   // @ts-ignore
