@@ -30,6 +30,10 @@ export function convertTypeToType(
   existingType: string,
   toType: (arg0: any) => any
 ) {
+  if (!data) {
+    return data;
+  }
+
   if (Array.isArray(data)) {
     return data.map((item) => {
       if (typeof item == existingType) {
