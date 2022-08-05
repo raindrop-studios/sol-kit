@@ -5,30 +5,23 @@ import {
   Connection,
   ParsedAccountData,
   PublicKey,
+  RpcResponseAndContext,
 } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
-type AccountResponse = {
-  pubkey: PublicKey;
-  account: AccountInfo<ParsedAccountData | Buffer>;
-};
+type AccountResponse = RpcResponseAndContext<
+  Array<{
+    pubkey: PublicKey;
+    account: AccountInfo<ParsedAccountData>;
+  }>
+>;
 
 const getAccounts = (
   connection: Connection,
   publicKey: PublicKey,
-): Promise<AccountResponse[]> =>
-  connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
-    filters: [
-      {
-        dataSize: 165, // number of bytes
-      },
-      {
-        memcmp: {
-          offset: 32, // number of bytes
-          bytes: publicKey.toString(), // base58 encoded string
-        },
-      },
-    ],
+): Promise<AccountResponse> =>
+  connection.getParsedTokenAccountsByOwner(publicKey, {
+    programId: TOKEN_PROGRAM_ID,
   });
 
 const fetchTokenInfoFromAccounts = async (
@@ -40,15 +33,10 @@ const fetchTokenInfoFromAccounts = async (
   callback(collateTokenInfoFromAccounts(accounts));
 };
 
-const collateTokenInfoFromAccounts = (
-  accounts: AccountResponse[],
-): TokenInfo[] =>
-  accounts
-    .filter(({ account: { data } }) => 'parsed' in data)
+const collateTokenInfoFromAccounts = (accounts: AccountResponse): TokenInfo[] =>
+  accounts.value
     .map(({ account: { data } }) => ({
-      // @ts-ignore
       mintAddr: data?.parsed?.info?.mint,
-      // @ts-ignore
       qty: data?.parsed?.info?.tokenAmount?.uiAmount,
     }))
     .filter(({ mintAddr, qty }) => !!(mintAddr && qty));
