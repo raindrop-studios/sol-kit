@@ -1,49 +1,20 @@
 {
-  "name": "@raindrop-studios/sol-kit",
-  "version": "0.1.79",
-  "description": "",
-  "module": "./dist/src/index.js",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
-  "type": "commonjs",
-  "exports": "./dist/src/index.js",
-  "scripts": {
-    "build": "tsc -p ./tsconfig.cjs.json",
-    "watch": "tsc -w -p ./src",
-    "format": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
-    "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "lint:check": "eslint \"src/**/*.ts\"",
-    "prepublishOnly": "yarn build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "files": [
-    "src/**/*.ts",
-    "dist/**/*.{ts,js,map}"
+  "private": true,
+  "workspaces": [
+    "sol-kit",
+    "frameworks/*"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:raindrop-studios/sol-kit.git"
-  },
   "devDependencies": {
-    "@babel/preset-env": "^7.15.6",
-    "@babel/preset-typescript": "^7.15.0",
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "@typescript-eslint/parser": "^5.30.7",
-    "eslint": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
     "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "^6.0.0",
-    "pkg": "^5.3.1",
     "prettier": "^2.7.1"
   },
-  "dependencies": {
-    "@project-serum/anchor": "^0.24.2",
-    "borsh": "^0.4.0",
-    "loglevel": "^1.8.0",
-    "typescript": "^4.3.5"
+  "scripts": {
+    "build": "tsc -b"
   }
 }

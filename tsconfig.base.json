@@ -1,7 +1,4 @@
 {
-  // "include": [
-  //   "./src/**/*"
-  // ],
   "compilerOptions": {
     "sourceMap": true,
     "declaration": true,
@@ -15,14 +12,18 @@
     "resolveJsonModule": true,
     "composite": true,
     "baseUrl": ".",
-    // "typeRoots": [
-    //   "types/",
-    //   "node_modules/@types"
-    // ],
-    // "paths": {
-    //   "@solana/web3.js": [
-    //     "./node_modules/@solana/web3.js/lib"
-    //   ]
-    // }
-  }
+    "paths": {
+      "@raindrop-studios/sol-kit": [
+        "sol-kit/*/src/index.ts"
+      ]
+    },
+  },
+  "references": [
+    {
+      "path": "sol-kit"
+    },
+    {
+      "path": "frameworks/react"
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-import { Program } from "../program/index";
+import { Program } from '../program/index';
 
 export abstract class Instruction {
   program: Program.Program;
@@ -8,4 +8,4 @@ export abstract class Instruction {
   }
 }
 
-export * as InstructionUtils from "./utils";
+export * as InstructionUtils from './utils';

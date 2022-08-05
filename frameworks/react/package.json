@@ -1,0 +1,45 @@
+{
+  "name": "@raindrop-studios/sol-kit-react",
+  "version": "0.0.1",
+  "description": "React utils for solana",
+  "module": "./dist/src/index.js",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "type": "commonjs",
+  "exports": "./dist/src/index.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.cjs.json",
+    "watch": "tsc -w -p .",
+    "format": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
+    "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:check": "eslint \"src/**/*.ts\"",
+    "prepublishOnly": "yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "src/**/*.ts",
+    "dist/**/*.{ts,js,map}"
+  ],
+  "repository": "git@github.com:raindrop-studios/sol-kit.git",
+  "devDependencies": {
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/react": "^18.0.0",
+    "pkg": "^5.3.1",
+    "react": "^18.0.0"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.2.0",
+    "@solana/wallet-adapter-base": "^0.9.9",
+    "@solana/wallet-adapter-react": "^0.15.8",
+    "@solana/web3.js": "^1.48.0",
+    "typescript": "^4.3.5"
+  },
+  "peerDependencies": {
+    "react": "^18.x"
+  },
+  "private": false
+}

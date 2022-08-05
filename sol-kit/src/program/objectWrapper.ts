@@ -1,4 +1,4 @@
-import { web3 } from "@project-serum/anchor";
+import { web3 } from '@project-serum/anchor';
 
 export interface ObjectWrapper<T, V> {
   program: V;

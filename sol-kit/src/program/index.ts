@@ -1,16 +1,16 @@
-import { web3, Program as AnchorProgram, AnchorProvider, Wallet, Idl } from "@project-serum/anchor";
-import { Keypair, TransactionInstruction } from "@solana/web3.js";
-import log from "loglevel";
+import { web3, Program as AnchorProgram, AnchorProvider, Wallet, Idl } from '@project-serum/anchor';
+import { Keypair, TransactionInstruction } from '@solana/web3.js';
+import log from 'loglevel';
 
-import { Instruction } from "../instruction";
-import { getCluster } from "../connection";
+import { Instruction } from '../instruction';
+import { getCluster } from '../connection';
 import {
   sendTransactionWithRetry,
   sendAsyncSignedTransactionWithRetry,
   SendTransactionResult,
-} from "../transaction/send";
+} from '../transaction/send';
 
-export * from "./objectWrapper";
+export * from './objectWrapper';
 
 export namespace Program {
   export interface ProgramConfig {
@@ -23,7 +23,7 @@ export namespace Program {
   export abstract class Program {
     instruction: Instruction;
     asyncSigning: boolean = false;
-    static PREFIX = "";
+    static PREFIX = '';
 
     protected PROGRAM_ID: web3.PublicKey;
     get id(): web3.PublicKey {
@@ -34,6 +34,7 @@ export namespace Program {
     get client(): AnchorProgram {
       return this._client;
     }
+
     set client(client: AnchorProgram) {
       this._client = client;
     }
@@ -41,7 +42,7 @@ export namespace Program {
     sendWithRetry(
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
-      options: SendOptions = { commitment: "confirmed" }
+      options: SendOptions = { commitment: 'confirmed' },
     ): Promise<SendTransactionResult> {
       if (this.asyncSigning) {
         return sendAsyncSignedTransactionWithRetry(
@@ -67,7 +68,7 @@ export namespace Program {
     sendWithAsyncSigningAndRetry(
       instructions: Array<TransactionInstruction>,
       signers: Array<Keypair> = [],
-      options: SendOptions = { commitment: "confirmed" }
+      options: SendOptions = { commitment: 'confirmed' },
     ): Promise<SendTransactionResult> {
       return sendAsyncSignedTransactionWithRetry(
         this.client.provider.connection,
@@ -85,7 +86,6 @@ export namespace Program {
     ): Promise<T> {
       return ProgramHelpers.getProgramWithConfig(type, config);
     }
-
 
     static getProgramWithWallet<T extends Program>(
       type: { new(): T ;},
@@ -155,7 +155,7 @@ export namespace ProgramHelpers {
     customRpcUrl: string | undefined,
     walletKeyPair?: web3.Keypair,
   ): Promise<T> {
-    if (customRpcUrl) log.debug("USING CUSTOM RPC URL:", customRpcUrl);
+    if (customRpcUrl) log.debug('USING CUSTOM RPC URL:', customRpcUrl);
 
     const solConnection = new web3.Connection(customRpcUrl || getCluster(env));
 
@@ -164,12 +164,12 @@ export namespace ProgramHelpers {
       providerWallet = wallet;
     } else if (walletKeyPair) {
       providerWallet = new Wallet(walletKeyPair);
-    } else if(!walletKeyPair) {
-      throw new Error("Wallet nor a keypair was passed into Program.getProgram");
+    } else if (!walletKeyPair) {
+      throw new Error('Wallet nor a keypair was passed into Program.getProgram');
     }
 
     const provider = new AnchorProvider(solConnection, providerWallet, {
-      preflightCommitment: "recent",
+      preflightCommitment: 'recent',
     });
 
     const config = {

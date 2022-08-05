@@ -1,4 +1,4 @@
-import { clusterApiUrl } from "@solana/web3.js";
+import { clusterApiUrl } from '@solana/web3.js';
 
 type Cluster = {
   name: Clusters;
@@ -6,30 +6,30 @@ type Cluster = {
 };
 
 export enum Clusters {
-  Mainnet = "mainnet-beta",
-  Testnet = "testnet",
-  Devnet = "devnet",
-  Localnet = "localnet",
+  Mainnet = 'mainnet-beta',
+  Testnet = 'testnet',
+  Devnet = 'devnet',
+  Localnet = 'localnet',
 };
 
 export const DEFAULT_CLUSTER = {
-    name: Clusters.Devnet,
-    url: clusterApiUrl("devnet"),
+  name: Clusters.Devnet,
+  url: clusterApiUrl('devnet'),
 } as Cluster;
 
 export const CLUSTERS: Cluster[] = [
   {
     name: Clusters.Mainnet,
-    url: "https://api.metaplex.solana.com/",
+    url: 'https://api.metaplex.solana.com/',
   },
   {
     name: Clusters.Testnet,
-    url: clusterApiUrl("testnet"),
+    url: clusterApiUrl('testnet'),
   },
   DEFAULT_CLUSTER,
   {
     name: Clusters.Localnet,
-    url: "http://127.0.0.1:8899",
+    url: 'http://127.0.0.1:8899',
   },
 ];
 
