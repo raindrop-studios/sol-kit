@@ -1,5 +1,12 @@
 import * as anchor from '@project-serum/anchor';
 import {
+  createAssociatedTokenAccountInstruction,
+  createInitializeMintInstruction,
+  createMintToInstruction,
+  MINT_SIZE,
+  TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
+import {
   createCreateMasterEditionV3Instruction,
   createCreateMetadataAccountV2Instruction,
   PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
@@ -10,55 +17,42 @@ const createMintNFTInstructions = async (
   provider: anchor.AnchorProvider,
   mintKeypair: anchor.web3.Keypair,
 ) => {
-  const tokenProgram = anchor.Spl.token(provider);
-  const associatedTokenProgram = anchor.Spl.associatedToken(provider);
-
-  const mintSpace = tokenProgram.account.mint.size;
   const balanceNeeded =
-    await provider.connection.getMinimumBalanceForRentExemption(mintSpace);
+    await provider.connection.getMinimumBalanceForRentExemption(MINT_SIZE);
 
   const createAccountIx = anchor.web3.SystemProgram.createAccount({
     fromPubkey: provider.wallet.publicKey,
     newAccountPubkey: mintKeypair.publicKey,
     lamports: balanceNeeded,
-    space: mintSpace,
-    programId: tokenProgram.programId,
+    space: MINT_SIZE,
+    programId: TOKEN_PROGRAM_ID,
   });
 
-  const createInitMintIx = await tokenProgram.methods
-    .initializeMint(0, provider.wallet.publicKey, provider.wallet.publicKey)
-    .accounts({
-      mint: mintKeypair.publicKey,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-    })
-    .instruction();
+  const createInitMintIx = createInitializeMintInstruction(
+    mintKeypair.publicKey,
+    0,
+    provider.wallet.publicKey,
+    provider.wallet.publicKey,
+  );
 
   const ata = await anchor.utils.token.associatedAddress({
     mint: mintKeypair.publicKey,
     owner: provider.wallet.publicKey,
   });
 
-  const createAtaIx = await associatedTokenProgram.methods
-    .create()
-    .accounts({
-      authority: provider.wallet.publicKey,
-      associatedAccount: ata,
-      owner: provider.wallet.publicKey,
-      mint: mintKeypair.publicKey,
-      systemProgram: anchor.web3.SystemProgram.programId,
-      tokenProgram: tokenProgram.programId,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-    })
-    .instruction();
+  const createAtaIx = createAssociatedTokenAccountInstruction(
+    provider.wallet.publicKey,
+    ata,
+    provider.wallet.publicKey,
+    mintKeypair.publicKey,
+  );
 
-  const createMintToIx = await tokenProgram.methods
-    .mintTo(new anchor.BN(1))
-    .accounts({
-      mint: mintKeypair.publicKey,
-      to: ata,
-      authority: provider.wallet.publicKey,
-    })
-    .instruction();
+  const createMintToIx = createMintToInstruction(
+    mintKeypair.publicKey,
+    ata,
+    provider.wallet.publicKey,
+    1,
+  );
 
   const [metadataPDA] = await anchor.web3.PublicKey.findProgramAddress(
     [
@@ -135,59 +129,42 @@ const createMintTokensInstructions = async (
   amount: number,
   decimals: number,
 ) => {
-  const tokenProgram = anchor.Spl.token(provider);
-  const associatedTokenProgram = anchor.Spl.associatedToken(provider);
-
-  const mintSpace = tokenProgram.account.mint.size;
   const balanceNeeded =
-    await provider.connection.getMinimumBalanceForRentExemption(mintSpace);
+    await provider.connection.getMinimumBalanceForRentExemption(MINT_SIZE);
 
   const createAccountIx = anchor.web3.SystemProgram.createAccount({
     fromPubkey: provider.wallet.publicKey,
     newAccountPubkey: mintKeypair.publicKey,
     lamports: balanceNeeded,
-    space: mintSpace,
-    programId: tokenProgram.programId,
+    space: MINT_SIZE,
+    programId: TOKEN_PROGRAM_ID,
   });
 
-  const createInitMintIx = await tokenProgram.methods
-    .initializeMint(
-      decimals,
-      provider.wallet.publicKey,
-      provider.wallet.publicKey,
-    )
-    .accounts({
-      mint: mintKeypair.publicKey,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-    })
-    .instruction();
+  const createInitMintIx = createInitializeMintInstruction(
+    mintKeypair.publicKey,
+    decimals,
+    provider.wallet.publicKey,
+    provider.wallet.publicKey,
+  );
 
   const ata = await anchor.utils.token.associatedAddress({
     mint: mintKeypair.publicKey,
     owner: provider.wallet.publicKey,
   });
 
-  const createAtaIx = await associatedTokenProgram.methods
-    .create()
-    .accounts({
-      authority: provider.wallet.publicKey,
-      associatedAccount: ata,
-      owner: provider.wallet.publicKey,
-      mint: mintKeypair.publicKey,
-      systemProgram: anchor.web3.SystemProgram.programId,
-      tokenProgram: tokenProgram.programId,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-    })
-    .instruction();
+  const createAtaIx = createAssociatedTokenAccountInstruction(
+    provider.wallet.publicKey,
+    ata,
+    provider.wallet.publicKey,
+    mintKeypair.publicKey,
+  );
 
-  const createMintToIx = await tokenProgram.methods
-    .mintTo(new anchor.BN(amount))
-    .accounts({
-      mint: mintKeypair.publicKey,
-      to: ata,
-      authority: provider.wallet.publicKey,
-    })
-    .instruction();
+  const createMintToIx = createMintToInstruction(
+    mintKeypair.publicKey,
+    ata,
+    provider.wallet.publicKey,
+    amount,
+  );
 
   return [createAccountIx, createInitMintIx, createAtaIx, createMintToIx];
 };
