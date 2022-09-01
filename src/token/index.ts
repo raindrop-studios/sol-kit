@@ -13,7 +13,7 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 import { sendTransactionWithRetry } from '../transaction';
 
-const createMintNFTInstructions = async (
+export const createMintNFTInstructions = async (
   provider: anchor.AnchorProvider,
   mintKeypair: anchor.web3.Keypair,
 ) => {
@@ -123,7 +123,7 @@ const createMintNFTInstructions = async (
   ];
 };
 
-const createMintTokensInstructions = async (
+export const createMintTokensInstructions = async (
   provider: anchor.AnchorProvider,
   mintKeypair: anchor.web3.Keypair,
   amount: number,
@@ -169,7 +169,7 @@ const createMintTokensInstructions = async (
   return [createAccountIx, createInitMintIx, createAtaIx, createMintToIx];
 };
 
-const mintNFT = async (
+export const mintNFT = async (
   provider: anchor.AnchorProvider,
   mintKeypair: anchor.web3.Keypair,
 ) => {
@@ -184,7 +184,7 @@ const mintNFT = async (
   );
 };
 
-const mintTokens = async (
+export const mintTokens = async (
   provider: anchor.AnchorProvider,
   mintKeypair: anchor.web3.Keypair,
   amount: number,
@@ -206,9 +206,7 @@ const mintTokens = async (
   );
 };
 
-const getMetadata = async (
-  mint: anchor.web3.PublicKey,
-): Promise<anchor.web3.PublicKey> => {
+export const getMetadata = async (mint: anchor.web3.PublicKey) => {
   return (
     await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -221,9 +219,7 @@ const getMetadata = async (
   )[0];
 };
 
-const getEdition = async (
-  mint: anchor.web3.PublicKey,
-): Promise<anchor.web3.PublicKey> => {
+export const getEdition = async (mint: anchor.web3.PublicKey) => {
   return (
     await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -235,13 +231,4 @@ const getEdition = async (
       TOKEN_METADATA_PROGRAM_ID,
     )
   )[0];
-};
-
-export {
-  createMintNFTInstructions,
-  createMintTokensInstructions,
-  mintNFT,
-  mintTokens,
-  getMetadata,
-  getEdition,
 };
