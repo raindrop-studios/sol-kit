@@ -4,4 +4,4 @@ export * as Transaction from './transaction';
 export * as Connection from './connection';
 export * as State from './state';
 export * as Wallet from './wallet';
-export * as Util from './token';
+export * as Token from './token';
