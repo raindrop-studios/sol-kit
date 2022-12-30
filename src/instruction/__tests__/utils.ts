@@ -58,4 +58,14 @@ describe("Type conversion with convertTypeToType", () => {
         (arg: Something) => arg.returnMe)
     ).toEqual({instance: "check"})
   })
+  it("takes any conversion function", () => {
+    const toType = (arg0: any) => `${arg0}-CONVERTED`
+    expect(
+      convertTypeToType(
+        {anyOldArg: 492},
+        ["anyOldArg"],
+        "number",
+        toType
+    )).toEqual({anyOldArg: "492-CONVERTED"})
+  })
 });
